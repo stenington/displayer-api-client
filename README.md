@@ -21,6 +21,16 @@
   });
 ```
 
+ID lookups are cached, but group lookups are not. You may also provide the user id
+if known to skip that step, like so: 
+
+``` javascript
+  var user = api.user({
+    id: 1,
+    email: "optional@example.org"
+  });
+```
+
 ## Callback Styles
 
 All of the user methods support three styles of invocation:
