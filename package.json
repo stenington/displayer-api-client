@@ -1,0 +1,26 @@
+{
+  "name": "displayer-api-client",
+  "description": "A client library for the Backpack Displayer API",
+  "version": "0.1.0",
+  "main": "index.js",
+  "author": "Mozilla Open Badges http://openbadges.org",
+  "license": "MPL 2.0",
+  "readmeFilename": "README.md",
+  "scripts": {
+    "test": "./node_modules/.bin/mocha test/*.test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/stenington/displayer-api-client.git"
+  },
+  "dependencies": {
+    "bluebird": "~1.2.1",
+    "JSONStream": "~0.8.0",
+    "request": "~2.34.0"
+  },
+  "devDependencies": {
+    "nock": "~0.27.3",
+    "mocha": "~1.18.2",
+    "should": "~3.2.0"
+  }
+}
