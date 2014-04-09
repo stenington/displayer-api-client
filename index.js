@@ -28,7 +28,13 @@ function User (emailOrObj, opts) {
         }
       }, function (err, res, body) {
         if (err) return reject(err);
-        if (res.statusCode !== 200) return reject(new Error('Non-200 response: ' + res.statusCode));
+        if (res.statusCode !== 200) {
+          var e = new Error();
+          if (body && body.status) e.status = body.status;
+          if (body && body.error) e.message = body.error;
+          else e.message = 'Non-200 response: ' + res.statusCode;
+          return reject(e);
+        }
         if (body && body.status !== 'okay') return reject(new Error(body));
         self._id = body.userId;
         resolve(body.userId);

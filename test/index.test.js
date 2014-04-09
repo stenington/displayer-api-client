@@ -71,6 +71,38 @@ describe("Displayer API Client", function () {
         done();
       });
     });
+
+    it('should pass through error status and message', function (done) {
+      this.backpack.post('/displayer/convert/email', {
+        email: "someone@example.org"
+      }).reply(404, {
+        status: "missing",
+        error: "some msg"
+      });
+
+      var u = this.displayerApi.user("someone@example.org");
+      u.id(function (err, id) {
+        should(id).not.be.ok;
+        should(err).be.ok;
+        err.message.should.equal('some msg');
+        err.status.should.equal('missing');
+        done();
+      });
+    });
+
+    it('should handle bodyless errors', function (done) {
+      this.backpack.post('/displayer/convert/email', {
+        email: "someone@example.org"
+      }).reply(500, "error");
+
+      var u = this.displayerApi.user("someone@example.org");
+      u.id(function (err, id) {
+        should(id).not.be.ok;
+        should(err).be.ok;
+        err.message.should.equal('Non-200 response: 500');
+        done();
+      });
+    });
   });
 
   describe("Success/failure callback style", function () {
