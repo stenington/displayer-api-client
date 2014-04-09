@@ -4,6 +4,12 @@ var request = require('request');
 var urlUtil = require('url');
 var util = require('util');
 
+function makeError(statusCode, body) {
+  var e = (body && body.error) ? new Error(body.error) : new Error('Non-200 response: ' + statusCode);
+  if (body && body.status) e.status = body.status;
+  return e;
+}
+
 function User (emailOrObj, opts) {
   var self = this;
 
@@ -28,14 +34,7 @@ function User (emailOrObj, opts) {
         }
       }, function (err, res, body) {
         if (err) return reject(err);
-        if (res.statusCode !== 200) {
-          var e = new Error();
-          if (body && body.status) e.status = body.status;
-          if (body && body.error) e.message = body.error;
-          else e.message = 'Non-200 response: ' + res.statusCode;
-          return reject(e);
-        }
-        if (body && body.status !== 'okay') return reject(new Error(body));
+        if (res.statusCode !== 200 || !body || body.status !== 'okay') return reject(makeError(res.statusCode, body));
         self._id = body.userId;
         resolve(body.userId);
       });
@@ -56,7 +55,7 @@ function User (emailOrObj, opts) {
           json: true
         }, function (err, res, body) {
           if (err) return reject(err);
-          if (res.statusCode !== 200) return reject(new Error('Non-200 response: ' + res.statusCode));
+          if (res.statusCode !== 200 || !body) return reject(makeError(res.statusCode, body));
           resolve(body.groups);
         });
       });
@@ -76,6 +75,9 @@ function User (emailOrObj, opts) {
       json: true
     });
     var j = JSONStream.parse('groups.*');
+    r.on('response', function (res) {
+      if (res.statusCode !== 200) j.emit('error', makeError(res.statusCode));
+    });
     return r.pipe(j);
   };
 
@@ -89,7 +91,7 @@ function User (emailOrObj, opts) {
           json: true
         }, function (err, res, body) {
           if (err) return reject(err);
-          if (res.statusCode !== 200) return reject(new Error('Non-200 response: ' + res.statusCode));
+          if (res.statusCode !== 200 || !body) return reject(makeError(res.statusCode, body));
           resolve(body.badges);
         });
       });
@@ -109,6 +111,9 @@ function User (emailOrObj, opts) {
       json: true
     });
     var j = JSONStream.parse('badges.*');
+    r.on('response', function (res) {
+      if (res.statusCode !== 200) j.emit('error', makeError(res.statusCode));
+    });
     return r.pipe(j);
   };
 
