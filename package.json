@@ -1,7 +1,7 @@
 {
   "name": "displayer-api-client",
   "description": "A client library for the Backpack Displayer API",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "main": "index.js",
   "author": "Mozilla Open Badges http://openbadges.org",
   "license": "MPL 2.0",
